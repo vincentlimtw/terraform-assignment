@@ -85,11 +85,12 @@ resource "aws_ecs_task_definition" "echoserver" {
 
 # Create ECS Service
 resource "aws_ecs_service" "echoserver" {
-  name            = "${var.prefix}-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.echoserver.arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
+  name                              = "${var.prefix}-service"
+  cluster                           = aws_ecs_cluster.main.id
+  task_definition                   = aws_ecs_task_definition.echoserver.arn
+  desired_count                     = var.desired_count
+  launch_type                       = "FARGATE"
+  health_check_grace_period_seconds = 120
 
   network_configuration {
     subnets          = [var.app_a_id, var.app_b_id]

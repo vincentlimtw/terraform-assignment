@@ -20,9 +20,6 @@ resource "aws_route_table" "gateway" {
     Name        = "${var.prefix}-gateway-rt"
     Environment = var.environment
   }
-
-  depends_on = [var.internet_tgw_attachment_id,
-  var.workload_tgw_attachment_id]
 }
 
 # Create Gateway Route Table Association for Gateway Subnet A
@@ -71,9 +68,6 @@ resource "aws_route_table" "web" {
     Name        = "${var.prefix}-web-rt"
     Environment = var.environment
   }
-
-  depends_on = [var.internet_tgw_attachment_id,
-  var.workload_tgw_attachment_id]
 }
 
 # Create Web Route Table Association for Web Subnet A
@@ -101,9 +95,6 @@ resource "aws_route_table" "app" {
     Name        = "${var.prefix}-app-rt"
     Environment = var.environment
   }
-
-  depends_on = [var.internet_tgw_attachment_id,
-  var.workload_tgw_attachment_id]
 }
 
 # Create App Route Table Association for App Subnet A

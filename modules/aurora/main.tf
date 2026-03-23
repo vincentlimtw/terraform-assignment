@@ -25,12 +25,13 @@ resource "aws_rds_cluster" "aurora" {
   db_subnet_group_name        = aws_db_subnet_group.aurora.name
   vpc_security_group_ids      = [var.aurora_sg_id]
   skip_final_snapshot         = true
+  storage_encrypted           = true
 
   serverlessv2_scaling_configuration {
     min_capacity = var.min_capacity
     max_capacity = var.max_capacity
   }
-  
+
   tags = {
     Name        = "${var.prefix}-aurora"
     Environment = var.environment
