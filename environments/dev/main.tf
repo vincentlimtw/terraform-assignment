@@ -51,10 +51,20 @@ module "routing" {
   gateway_a_id               = module.vpc.gateway_a_id
   gateway_b_id               = module.vpc.gateway_b_id
   nat_gateway_id             = module.nat.nat_gateway_id
-  internet_tgw_id     = module.vpc.internet_tgw_id
+  internet_tgw_id            = module.vpc.internet_tgw_id
   workload_vpc_id            = module.vpc.workload_vpc_id
   web_a_id                   = module.vpc.web_a_id
   web_b_id                   = module.vpc.web_b_id
   app_a_id                   = module.vpc.app_a_id
   app_b_id                   = module.vpc.app_b_id
+}
+
+module "security" {
+  source          = "../../modules/security"
+  prefix          = local.prefix
+  internet_vpc_id = module.vpc.internet_vpc_id
+  workload_vpc_id = module.vpc.workload_vpc_id
+  internet_cidr   = var.internet_vpc_cidr
+  workload_cidr   = var.workload_vpc_cidr
+}
 }
