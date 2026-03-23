@@ -18,3 +18,15 @@ module "vpc" {
   az_a              = var.az_a
   az_b              = var.az_b
 }
+
+module "tgw" {
+  source            = "../../modules/tgw"
+  prefix            = local.prefix
+  environment       = var.environment
+  internet_vpc_id   = module.vpc.internet_vpc_id
+  workload_vpc_id   = module.vpc.workload_vpc_id
+  internet_tgw_id   = module.vpc.internet_tgw_id
+  workload_tgw_id   = module.vpc.workload_tgw_id
+  internet_vpc_cidr = var.internet_vpc_cidr
+  workload_vpc_cidr = var.workload_vpc_cidr
+}
