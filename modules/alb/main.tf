@@ -4,10 +4,10 @@
 
 # Create Workload NLB
 resource "aws_lb" "nlb" {
-  name               = "${var.prefix}-workload-nlb"
-  internal           = true
-  load_balancer_type = "network"
-  subnets            = [var.web_a_id, var.web_b_id]
+  name                             = "${var.prefix}-workload-nlb"
+  internal                         = true
+  load_balancer_type               = "network"
+  subnets                          = [var.web_a_id, var.web_b_id]
   enable_cross_zone_load_balancing = true
 
   tags = {
