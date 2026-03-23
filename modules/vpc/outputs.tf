@@ -9,3 +9,5 @@ output "web_a_id"     { value = aws_subnet.web_a.id }
 output "web_b_id"     { value = aws_subnet.web_b.id }
 output "app_a_id"     { value = aws_subnet.app_a.id }
 output "app_b_id"     { value = aws_subnet.app_b.id }
+output "data_a_id"     { value = aws_subnet.data_a.id }
+output "data_b_id"     { value = aws_subnet.data_b.id }

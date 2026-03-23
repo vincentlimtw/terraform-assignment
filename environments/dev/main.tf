@@ -46,8 +46,8 @@ module "routing" {
   igw_id                     = module.vpc.igw_id
   workload_vpc_cidr          = var.workload_vpc_cidr
   tgw_id                     = module.tgw.tgw_id
-  internet_tgw_attachment_id = module.tgw.internet_attachment_id
-  workload_tgw_attachment_id = module.tgw.workload_attachment_id
+  internet_tgw_attachment_id = module.tgw.internet_tgw_attachment_id
+  workload_tgw_attachment_id = module.tgw.workload_tgw_attachment_id
   gateway_a_id               = module.vpc.gateway_a_id
   gateway_b_id               = module.vpc.gateway_b_id
   nat_gateway_id             = module.nat.nat_gateway_id
