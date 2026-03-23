@@ -98,3 +98,31 @@ variable "az_b" {
   description = "Secondary Availability Zone"
   default     = "ap-southeast-1b"
 }
+
+# -----------------------------------------------------------------------------
+# ECS
+# -----------------------------------------------------------------------------
+variable "container_image" {
+  description = "Docker image for the echoserver container"
+  default     = "k8s.gcr.io/e2e-test-images/echoserver:2.5"
+}
+
+variable "task_cpu" {
+  description = "CPU units for the ECS task"
+  default     = 256
+}
+
+variable "task_memory" {
+  description = "Memory (MB) for the ECS task"
+  default     = 512
+}
+
+variable "desired_count" {
+  description = "Number of ECS tasks to run"
+  default     = 1
+}
+
+variable "log_retention_days" {
+  description = "CloudWatch log retention in days"
+  default     = 7
+}

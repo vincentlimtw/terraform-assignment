@@ -81,3 +81,19 @@ module "alb" {
   internet_alb_sg_id = module.security.internet_alb_sg_id
   workload_alb_sg_id = module.security.workload_alb_sg_id
 }
+
+module "ecs" {
+  source              = "../../modules/ecs"
+  prefix              = local.prefix
+  environment         = var.environment
+  aws_region          = var.aws_region
+  app_a_id            = module.vpc.app_a_id
+  app_b_id            = module.vpc.app_b_id
+  ecs_sg_id           = module.security.ecs_sg_id
+  workload_alb_tg_arn = module.alb.workload_alb_tg_arn
+  container_image     = var.container_image
+  task_cpu            = var.task_cpu
+  task_memory         = var.task_memory
+  desired_count       = var.desired_count
+  log_retention_days  = var.log_retention_days
+}

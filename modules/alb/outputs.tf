@@ -1,0 +1,1 @@
+output "workload_alb_tg_arn" { value = aws_lb_target_group.workload_alb.arn }
