@@ -30,3 +30,11 @@ module "tgw" {
   internet_vpc_cidr = var.internet_vpc_cidr
   workload_vpc_cidr = var.workload_vpc_cidr
 }
+
+module "nat" {
+  source      = "../../modules/nat"
+  prefix      = local.prefix
+  environment = var.environment
+  gateway_a   = module.vpc.gateway_a_id
+}
+}
