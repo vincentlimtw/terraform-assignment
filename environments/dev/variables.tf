@@ -126,3 +126,26 @@ variable "log_retention_days" {
   description = "CloudWatch log retention in days"
   default     = 7
 }
+
+# -----------------------------------------------------------------------------
+# Aurora
+# -----------------------------------------------------------------------------
+variable "engine_version" {
+  description = "Aurora MySQL engine version"
+  default     = "8.0.mysql_aurora.3.04.0"
+}
+
+variable "database_name" {
+  description = "Initial database name"
+  default     = "echoserver"
+}
+
+variable "min_capacity" {
+  description = "Minimum Aurora Serverless v2 capacity"
+  default     = 0.5
+}
+
+variable "max_capacity" {
+  description = "Maximum Aurora Serverless v2 capacity"
+  default     = 4.0
+}

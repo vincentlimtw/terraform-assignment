@@ -97,3 +97,16 @@ module "ecs" {
   desired_count       = var.desired_count
   log_retention_days  = var.log_retention_days
 }
+
+module "aurora" {
+  source         = "../../modules/aurora"
+  prefix         = local.prefix
+  environment    = var.environment
+  data_a_id      = module.vpc.data_a_id
+  data_b_id      = module.vpc.data_b_id
+  aurora_sg_id   = module.security.aurora_sg_id
+  engine_version = var.engine_version
+  database_name  = var.database_name
+  min_capacity   = var.min_capacity
+  max_capacity   = var.max_capacity
+}

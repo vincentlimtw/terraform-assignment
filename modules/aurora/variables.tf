@@ -1,0 +1,9 @@
+variable "prefix" { description = "Resource Name Prefix"}
+variable "environment"        { description = "Environment name" }
+variable "data_a_id"          { description = "Data Subnet A ID" }
+variable "data_b_id"          { description = "Data Subnet B ID" }
+variable "aurora_sg_id"       { description = "Aurora Security Group ID" }
+variable "engine_version"     { description = "Aurora MySQL Engine Version" }
+variable "database_name"      { description = "Initial Database Name" }
+variable "min_capacity"       { description = "Minimum Aurora Serverless v2 capacity" }
+variable "max_capacity"       { description = "Maximum Aurora Serverless v2 capacity" }
