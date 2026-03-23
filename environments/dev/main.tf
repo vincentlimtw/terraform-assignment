@@ -37,4 +37,24 @@ module "nat" {
   environment = var.environment
   gateway_a   = module.vpc.gateway_a_id
 }
+
+module "routing" {
+  source                     = "../../modules/routing"
+  prefix                     = local.prefix
+  environment                = var.environment
+  internet_vpc_id            = module.vpc.internet_vpc_id
+  igw_id                     = module.vpc.igw_id
+  workload_vpc_cidr          = var.workload_vpc_cidr
+  tgw_id                     = module.tgw.tgw_id
+  internet_tgw_attachment_id = module.tgw.internet_attachment_id
+  workload_tgw_attachment_id = module.tgw.workload_attachment_id
+  gateway_a_id               = module.vpc.gateway_a_id
+  gateway_b_id               = module.vpc.gateway_b_id
+  nat_gateway_id             = module.nat.nat_gateway_id
+  internet_tgw_id     = module.vpc.internet_tgw_id
+  workload_vpc_id            = module.vpc.workload_vpc_id
+  web_a_id                   = module.vpc.web_a_id
+  web_b_id                   = module.vpc.web_b_id
+  app_a_id                   = module.vpc.app_a_id
+  app_b_id                   = module.vpc.app_b_id
 }
