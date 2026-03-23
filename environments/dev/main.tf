@@ -67,4 +67,17 @@ module "security" {
   internet_cidr   = var.internet_vpc_cidr
   workload_cidr   = var.workload_vpc_cidr
 }
+
+module "alb" {
+  source             = "../../modules/alb"
+  prefix             = local.prefix
+  environment        = var.environment
+  internet_vpc_id    = module.vpc.internet_vpc_id
+  workload_vpc_id    = module.vpc.workload_vpc_id
+  gateway_a_id       = module.vpc.gateway_a_id
+  gateway_b_id       = module.vpc.gateway_b_id
+  web_a_id           = module.vpc.web_a_id
+  web_b_id           = module.vpc.web_b_id
+  internet_alb_sg_id = module.security.internet_alb_sg_id
+  workload_alb_sg_id = module.security.workload_alb_sg_id
 }

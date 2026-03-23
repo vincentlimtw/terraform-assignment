@@ -1,0 +1,10 @@
+variable "prefix" { description = "Resource Name Prefix"}
+variable "environment"           { description = "Environment Name" }
+variable "internet_vpc_id"       { description = "Internet VPC ID" }
+variable "workload_vpc_id"       { description = "Workload VPC ID" }
+variable "gateway_a_id"          { description = "Gateway Subnet A ID" }
+variable "gateway_b_id"          { description = "Gateway Subnet B ID" }
+variable "web_a_id"              { description = "Web Subnet A ID" }
+variable "web_b_id"              { description = "Web Subnet B ID" }
+variable "internet_alb_sg_id"    { description = "Internet ALB Security Group ID" }
+variable "workload_alb_sg_id"    { description = "Workload ALB security group ID" }
