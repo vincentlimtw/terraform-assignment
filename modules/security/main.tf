@@ -20,6 +20,11 @@ resource "aws_security_group" "internet_alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name        = "${var.prefix}-internet-alb-sg"
+    Environment = var.environment
+  }
 }
 
 # Create Workload ALB Security Group
@@ -39,6 +44,11 @@ resource "aws_security_group" "workload_alb" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.prefix}-workload-alb-sg"
+    Environment = var.environment
   }
 }
 
@@ -60,6 +70,11 @@ resource "aws_security_group" "ecs" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name        = "${var.prefix}-ecs-sg"
+    Environment = var.environment
+  }
 }
 
 # Create Aurora Security Group
@@ -79,5 +94,10 @@ resource "aws_security_group" "aurora" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.prefix}-aurora-sg"
+    Environment = var.environment
   }
 }
