@@ -68,7 +68,7 @@ Internet
 ## Data Flow
 
 1. Request hits the **Internet ALB** (public, Internet VPC) on port 80
-2. Internet ALB forwards to the **NLB's ENI private IPs** as IP targets. Traffic crosses VPCs via the Transit Gateway
+2. Internet ALB forwards to the **Workload NLB's ENI private IPs** as IP targets. Traffic crosses VPCs via the Transit Gateway
 3. **NLB** (internal, Workload VPC) forwards to the **Workload ALB** registered as its target
 4. **Workload ALB** (internal) forwards to ECS Fargate tasks on port 8080
 5. **ECS Fargate** runs the echoserver container and returns the response
@@ -87,13 +87,12 @@ Internet
 
 ```
 .
-├── environments/
-│   └── dev/
-│       ├── locals.tf         # Resource name prefix
-│       ├── main.tf           # Root module — wires all modules together
-│       ├── outputs.tf        # Root outputs
-│       ├── provider.tf       # AWS and time provider declarations
-│       └── variables.tf      # Input variable definitions and defaults
+├── dev.tfvars        # Dev environment values
+├── locals.tf         # Resource name prefix
+├── main.tf           # Root module — wires all modules together
+├── outputs.tf        # Root outputs
+├── provider.tf       # AWS and time provider declarations
+├── variables.tf      # Input variable definitions and defaults
 └── modules/
     ├── alb/          # Internet ALB, Workload NLB, and Workload ALB
     ├── aurora/       # Aurora MySQL Serverless v2 cluster
@@ -125,30 +124,41 @@ Internet
 
 ## Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `aws_region` | `ap-southeast-1` | AWS region to deploy into |
-| `prefix` | `echoserver` | Prefix for all resource names |
-| `environment` | `dev` | Environment label |
-| `internet_vpc_cidr` | `10.0.0.0/16` | Internet VPC CIDR |
-| `workload_vpc_cidr` | `10.1.0.0/16` | Workload VPC CIDR |
-| `az_a` | `ap-southeast-1a` | Primary availability zone |
-| `az_b` | `ap-southeast-1b` | Secondary availability zone |
-| `container_image` | `k8s.gcr.io/e2e-test-images/echoserver:2.5` | Container image to run |
-| `task_cpu` | `256` | ECS task CPU units |
-| `task_memory` | `512` | ECS task memory in MB |
-| `desired_count` | `1` | Number of ECS tasks |
-| `log_retention_days` | `7` | CloudWatch log retention |
-| `min_capacity` | `0.5` | Aurora minimum ACU capacity |
-| `max_capacity` | `4.0` | Aurora maximum ACU capacity |
+| Variable | Description |
+|----------|-------------|
+| `aws_region` | AWS region to deploy into |
+| `prefix` | Prefix for all resource names |
+| `environment` | Environment label |
+| `internet_vpc_cidr` | Internet VPC CIDR |
+| `workload_vpc_cidr` | Workload VPC CIDR |
+| `internet_subnets` | Map of Internet VPC subnets (cidr, az) |
+| `workload_subnets` | Map of Workload VPC subnets (cidr, az) |
+| `container_image` | Container image to run |
+| `task_cpu` | ECS task CPU units |
+| `task_memory` | ECS task memory in MB |
+| `desired_count` | Number of ECS tasks |
+| `log_retention_days` | CloudWatch log retention in days |
+| `container_port` | Port the container listens on |
+| `engine_version` | Aurora MySQL engine version |
+| `database_name` | Initial database name |
+| `min_capacity` | Aurora minimum ACU capacity |
+| `max_capacity` | Aurora maximum ACU capacity |
+| `db_port` | Database port |
+| `workload_nlb_tg_port` | Workload NLB target group port |
+| `workload_nlb_lis_port` | Workload NLB listener port |
+| `workload_alb_tg_port` | Workload ALB target group port |
+| `workload_alb_lis_port` | Workload ALB listener port |
+| `internet_alb_tg_port` | Internet ALB target group port |
+| `internet_alb_lis_port` | Internet ALB listener port |
 
 ---
 
 ## Usage
 
-**1. Clone the repository and navigate to the environment directory**
+**1. Clone the repository and navigate to the directory**
 ```bash
-cd environments/dev
+git clone https://github.com/vincentlimtw/terraform-assignment
+cd terraform-assignment
 ```
 
 **2. Initialise Terraform**
@@ -158,12 +168,12 @@ terraform init
 
 **3. Review the plan**
 ```bash
-terraform plan
+terraform plan -var-file=dev.tfvars
 ```
 
 **4. Apply**
 ```bash
-terraform apply
+terraform apply -var-file=dev.tfvars
 ```
 
 > **Note:** The first apply takes approximately 5–8 minutes. The ALB module waits 180 seconds for the NLB's ENIs to fully provision before looking up their IPs and registering them as targets.
@@ -186,7 +196,7 @@ curl $(terraform output -raw app_url)
 ## Cleanup
 
 ```bash
-terraform destroy
+terraform destroy -var-file=dev.tfvars
 ```
 
 This removes all provisioned resources including both VPCs, the Transit Gateway, all load balancers, the ECS cluster, Aurora cluster, and associated IAM and networking resources.
@@ -199,13 +209,13 @@ This removes all provisioned resources including both VPCs, the Transit Gateway,
 
 The firewall subnet exists in the Internet VPC but has no firewall resource deployed, allowing traffic to pass through uninspected. An attacker can send malicious payloads such as SQL injection or exploit code directly to the Internet ALB with no layer of inspection to detect or block it.
 
-**2. Unrestricted outbound traffic from ECS**
+**2. Shared Transit Gateway between public and private traffic**
 
-The ECS security group allows all outbound traffic (`0.0.0.0/0`) with no egress filtering in place. If the echoserver container is ever compromised, an attacker can establish outbound connections to an external command-and-control server, exfiltrate data, or download malicious payloads undetected.
+Both the Internet VPC and Workload VPC share the same Transit Gateway. If the TGW route tables are misconfigured, public internet traffic could potentially reach internal workload resources directly, bypassing the intended network separation between the two VPCs.
 
-**3. Hardcoded Aurora master username with no password rotation**
+**3. No Aurora snapshots**
 
-The Aurora cluster uses a hardcoded master username of `admin` with no rotation schedule configured. An attacker who obtains the secret via a misconfigured IAM policy or a compromised ECS task role retains permanent database access until the password is manually rotated.
+The Aurora cluster is configured with `skip_final_snapshot = true`, meaning no snapshot is taken when the cluster is destroyed. If data is accidentally deleted, targeted in a ransomware attack, or the cluster is destroyed, there is no backup to restore from.
 
 ---
 
