@@ -83,6 +83,14 @@ resource "aws_vpc_security_group_egress_rule" "ecs" {
   ip_protocol                  = "tcp"
 }
 
+resource "aws_vpc_security_group_egress_rule" "ecs_https" {
+  security_group_id = aws_security_group.ecs.id
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
 # Create Aurora Security Group
 resource "aws_security_group" "aurora" {
   name   = "${var.prefix}-aurora-sg"
