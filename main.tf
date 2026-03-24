@@ -1,5 +1,5 @@
 module "vpc" {
-  source            = "../../modules/vpc"
+  source            = "./modules/vpc"
   prefix            = local.prefix
   environment       = var.environment
   internet_vpc_cidr = var.internet_vpc_cidr
@@ -20,7 +20,7 @@ module "vpc" {
 }
 
 module "tgw" {
-  source            = "../../modules/tgw"
+  source            = "./modules/tgw"
   prefix            = local.prefix
   environment       = var.environment
   internet_vpc_id   = module.vpc.internet_vpc_id
@@ -32,14 +32,14 @@ module "tgw" {
 }
 
 module "nat" {
-  source      = "../../modules/nat"
+  source      = "./modules/nat"
   prefix      = local.prefix
   environment = var.environment
   gateway_a   = module.vpc.gateway_a_id
 }
 
 module "routing" {
-  source            = "../../modules/routing"
+  source            = "./modules/routing"
   prefix            = local.prefix
   environment       = var.environment
   internet_vpc_id   = module.vpc.internet_vpc_id
@@ -58,7 +58,7 @@ module "routing" {
 }
 
 module "security" {
-  source          = "../../modules/security"
+  source          = "./modules/security"
   prefix          = local.prefix
   environment     = var.environment
   internet_vpc_id = module.vpc.internet_vpc_id
@@ -68,7 +68,7 @@ module "security" {
 }
 
 module "alb" {
-  source             = "../../modules/alb"
+  source             = "./modules/alb"
   prefix             = local.prefix
   environment        = var.environment
   internet_vpc_id    = module.vpc.internet_vpc_id
@@ -82,7 +82,7 @@ module "alb" {
 }
 
 module "ecs" {
-  source              = "../../modules/ecs"
+  source              = "./modules/ecs"
   prefix              = local.prefix
   environment         = var.environment
   aws_region          = var.aws_region
@@ -98,7 +98,7 @@ module "ecs" {
 }
 
 module "aurora" {
-  source         = "../../modules/aurora"
+  source         = "./modules/aurora"
   prefix         = local.prefix
   environment    = var.environment
   data_a_id      = module.vpc.data_a_id
