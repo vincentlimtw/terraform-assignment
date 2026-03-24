@@ -63,10 +63,11 @@ module "security" {
   environment           = var.environment
   internet_vpc_id       = module.vpc.internet_vpc_id
   workload_vpc_id       = module.vpc.workload_vpc_id
-  internet_cidr         = var.internet_vpc_cidr
-  workload_cidr         = var.workload_vpc_cidr
+  internet_vpc_cidr     = var.internet_vpc_cidr
+  workload_vpc_cidr     = var.workload_vpc_cidr
   internet_alb_lis_port = var.internet_alb_lis_port
   workload_alb_lis_port = var.workload_alb_lis_port
+  workload_nlb_lis_port = var.workload_nlb_lis_port
   container_port        = var.container_port
   db_port               = var.db_port
 }
