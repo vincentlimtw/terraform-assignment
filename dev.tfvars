@@ -1,21 +1,23 @@
-aws_region            = "ap-southeast-1"
-prefix                = "echoserver"
-environment           = "dev"
-internet_vpc_cidr     = "10.0.0.0/16"
-workload_vpc_cidr     = "10.1.0.0/16"
-firewall_cidr         = "10.0.1.0/24"
-gateway_a_cidr        = "10.0.2.0/24"
-gateway_b_cidr        = "10.0.3.0/24"
-internet_tgw_cidr     = "10.0.4.0/24"
-web_a_cidr            = "10.1.1.0/24"
-web_b_cidr            = "10.1.2.0/24"
-workload_tgw_cidr     = "10.1.3.0/24"
-app_a_cidr            = "10.1.4.0/24"
-app_b_cidr            = "10.1.5.0/24"
-data_a_cidr           = "10.1.6.0/24"
-data_b_cidr           = "10.1.7.0/24"
-az_a                  = "ap-southeast-1a"
-az_b                  = "ap-southeast-1b"
+aws_region        = "ap-southeast-1"
+prefix            = "echoserver"
+environment       = "dev"
+internet_vpc_cidr = "10.0.0.0/16"
+workload_vpc_cidr = "10.1.0.0/16"
+internet_subnets = {
+  firewall     = { cidr = "10.0.1.0/24", az = "ap-southeast-1a" }
+  gateway-a    = { cidr = "10.0.2.0/24", az = "ap-southeast-1a" }
+  gateway-b    = { cidr = "10.0.3.0/24", az = "ap-southeast-1b" }
+  internet-tgw = { cidr = "10.0.4.0/24", az = "ap-southeast-1a" }
+}
+workload_subnets = {
+  web-a        = { cidr = "10.1.1.0/24", az = "ap-southeast-1a" }
+  web-b        = { cidr = "10.1.2.0/24", az = "ap-southeast-1b" }
+  workload-tgw = { cidr = "10.1.3.0/24", az = "ap-southeast-1a" }
+  app-a        = { cidr = "10.1.4.0/24", az = "ap-southeast-1a" }
+  app-b        = { cidr = "10.1.5.0/24", az = "ap-southeast-1b" }
+  data-a       = { cidr = "10.1.6.0/24", az = "ap-southeast-1a" }
+  data-b       = { cidr = "10.1.7.0/24", az = "ap-southeast-1b" }
+}
 container_image       = "k8s.gcr.io/e2e-test-images/echoserver:2.5"
 task_cpu              = 256
 task_memory           = 512

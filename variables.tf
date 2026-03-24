@@ -14,9 +14,8 @@ variable "environment" {
 }
 
 # -----------------------------------------------------------------------------
-# CIDRs
+# VPCs
 # -----------------------------------------------------------------------------
-# VPC
 variable "internet_vpc_cidr" {
   description = "Internet VPC CIDR"
 }
@@ -25,60 +24,23 @@ variable "workload_vpc_cidr" {
   description = "Workload VPC CIDR"
 }
 
+# -----------------------------------------------------------------------------
 # Subnets
-variable "firewall_cidr" {
-  description = "Firewall Subnet CIDR"
-}
-
-variable "gateway_a_cidr" {
-  description = "Gateway Subnet A CIDR"
-}
-
-variable "gateway_b_cidr" {
-  description = "Gateway Subnet B CIDR"
-}
-
-variable "internet_tgw_cidr" {
-  description = "Internet TGW Subnet CIDR"
-}
-
-variable "web_a_cidr" {
-  description = "Web Subnet A CIDR"
-}
-
-variable "web_b_cidr" {
-  description = "Web Subnet B CIDR"
-}
-
-variable "workload_tgw_cidr" {
-  description = "Workload TGW Subnet CIDR"
-}
-
-variable "app_a_cidr" {
-  description = "App Subnet A CIDR"
-}
-
-variable "app_b_cidr" {
-  description = "App Subnet B CIDR"
-}
-
-variable "data_a_cidr" {
-  description = "Data Subnet A CIDR"
-}
-
-variable "data_b_cidr" {
-  description = "Data Subnet B CIDR"
-}
-
 # -----------------------------------------------------------------------------
-# Availability Zones
-# -----------------------------------------------------------------------------
-variable "az_a" {
-  description = "Primary Availability Zone"
+variable "internet_subnets" {
+  description = "Map of Internet VPC subnets"
+  type = map(object({
+    cidr = string
+    az   = string
+  }))
 }
 
-variable "az_b" {
-  description = "Secondary Availability Zone"
+variable "workload_subnets" {
+  description = "Map of Workload VPC subnets"
+  type = map(object({
+    cidr = string
+    az   = string
+  }))
 }
 
 # -----------------------------------------------------------------------------
