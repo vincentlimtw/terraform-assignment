@@ -19,7 +19,7 @@ resource "aws_lb" "nlb" {
 # Create Workload NLB Target Group
 resource "aws_lb_target_group" "nlb" {
   name        = "${var.prefix}-nlb-tg"
-  port        = 80
+  port        = var.workload_nlb_tg_port
   protocol    = "TCP"
   vpc_id      = var.workload_vpc_id
   target_type = "alb"
@@ -38,7 +38,7 @@ resource "aws_lb_target_group" "nlb" {
 # Create Workload NLB Listener
 resource "aws_lb_listener" "nlb" {
   load_balancer_arn = aws_lb.nlb.arn
-  port              = 80
+  port              = var.workload_nlb_lis_port
   protocol          = "TCP"
 
   default_action {
@@ -66,7 +66,7 @@ resource "aws_lb" "workload_alb" {
 # Create Workload ALB Target Group
 resource "aws_lb_target_group" "workload_alb" {
   name        = "${var.prefix}-workload-alb-tg"
-  port        = 8080
+  port        = var.workload_alb_tg_port
   protocol    = "HTTP"
   vpc_id      = var.workload_vpc_id
   target_type = "ip"
@@ -74,7 +74,6 @@ resource "aws_lb_target_group" "workload_alb" {
   health_check {
     enabled             = true
     path                = "/"
-    port                = "8080"
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 15
@@ -89,7 +88,7 @@ resource "aws_lb_target_group" "workload_alb" {
 # Create Workload ALB Listener
 resource "aws_lb_listener" "workload_alb" {
   load_balancer_arn = aws_lb.workload_alb.arn
-  port              = 80
+  port              = var.workload_alb_lis_port
   protocol          = "HTTP"
 
   default_action {
@@ -102,7 +101,7 @@ resource "aws_lb_listener" "workload_alb" {
 resource "aws_lb_target_group_attachment" "nlb_to_alb" {
   target_group_arn = aws_lb_target_group.nlb.arn
   target_id        = aws_lb.workload_alb.arn
-  port             = 80
+  port             = var.workload_nlb_tg_port
 
   depends_on = [aws_lb_listener.workload_alb]
 }
@@ -161,7 +160,7 @@ resource "aws_lb" "internet_alb" {
 # Create Internet ALB Target Group
 resource "aws_lb_target_group" "internet_alb" {
   name        = "${var.prefix}-internet-alb-tg"
-  port        = 80
+  port        = var.internet_alb_tg_port
   protocol    = "HTTP"
   vpc_id      = var.internet_vpc_id
   target_type = "ip"
@@ -181,7 +180,7 @@ resource "aws_lb_target_group" "internet_alb" {
 # Create Internet ALB Listener
 resource "aws_lb_listener" "internet_alb" {
   load_balancer_arn = aws_lb.internet_alb.arn
-  port              = 80
+  port              = var.internet_alb_lis_port
   protocol          = "HTTP"
 
   default_action {
@@ -196,6 +195,6 @@ resource "aws_lb_target_group_attachment" "nlb_eni" {
 
   target_group_arn  = aws_lb_target_group.internet_alb.arn
   target_id         = each.value.private_ip
-  port              = 80
+  port              = var.internet_alb_tg_port
   availability_zone = "all"
 }

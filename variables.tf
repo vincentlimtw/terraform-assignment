@@ -104,6 +104,10 @@ variable "log_retention_days" {
   description = "CloudWatch log retention in days"
 }
 
+variable "container_port" {
+  description = "Container Port"
+}
+
 # -----------------------------------------------------------------------------
 # Aurora
 # -----------------------------------------------------------------------------
@@ -121,4 +125,35 @@ variable "min_capacity" {
 
 variable "max_capacity" {
   description = "Maximum Aurora Serverless v2 capacity"
+}
+
+variable "db_port" {
+  description = "Database Port"
+}
+
+# -----------------------------------------------------------------------------
+# ALB Port Numbers
+# -----------------------------------------------------------------------------
+variable "workload_nlb_tg_port" {
+  description = "Workload NLB Target Group Port"
+}
+
+variable "workload_nlb_lis_port" {
+  description = "Workload NLB Listener Port"
+}
+
+variable "workload_alb_tg_port" {
+  description = "Workload ALB Target Group Port"
+}
+
+variable "workload_alb_lis_port" {
+  description = "Workload ALB Listener Port"
+}
+
+variable "internet_alb_tg_port" {
+  description = "Internet ALB Target Group Port"
+}
+
+variable "internet_alb_lis_port" {
+  description = "Internet ALB Listener Port"
 }

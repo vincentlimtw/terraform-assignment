@@ -10,3 +10,4 @@ variable "task_cpu" { description = "CPU units for the ECS task" }
 variable "task_memory" { description = "Memory (MB) for the ECS task" }
 variable "desired_count" { description = "Number of ECS tasks to run" }
 variable "log_retention_days" { description = "CloudWatch log retention in days" }
+variable "container_port" { description = "Container Port" }

@@ -58,27 +58,37 @@ module "routing" {
 }
 
 module "security" {
-  source          = "./modules/security"
-  prefix          = local.prefix
-  environment     = var.environment
-  internet_vpc_id = module.vpc.internet_vpc_id
-  workload_vpc_id = module.vpc.workload_vpc_id
-  internet_cidr   = var.internet_vpc_cidr
-  workload_cidr   = var.workload_vpc_cidr
+  source                = "./modules/security"
+  prefix                = local.prefix
+  environment           = var.environment
+  internet_vpc_id       = module.vpc.internet_vpc_id
+  workload_vpc_id       = module.vpc.workload_vpc_id
+  internet_cidr         = var.internet_vpc_cidr
+  workload_cidr         = var.workload_vpc_cidr
+  internet_alb_lis_port = var.internet_alb_lis_port
+  workload_alb_lis_port = var.workload_alb_lis_port
+  container_port        = var.container_port
+  db_port               = var.db_port
 }
 
 module "alb" {
-  source             = "./modules/alb"
-  prefix             = local.prefix
-  environment        = var.environment
-  internet_vpc_id    = module.vpc.internet_vpc_id
-  workload_vpc_id    = module.vpc.workload_vpc_id
-  gateway_a_id       = module.vpc.gateway_a_id
-  gateway_b_id       = module.vpc.gateway_b_id
-  web_a_id           = module.vpc.web_a_id
-  web_b_id           = module.vpc.web_b_id
-  internet_alb_sg_id = module.security.internet_alb_sg_id
-  workload_alb_sg_id = module.security.workload_alb_sg_id
+  source                = "./modules/alb"
+  prefix                = local.prefix
+  environment           = var.environment
+  internet_vpc_id       = module.vpc.internet_vpc_id
+  workload_vpc_id       = module.vpc.workload_vpc_id
+  gateway_a_id          = module.vpc.gateway_a_id
+  gateway_b_id          = module.vpc.gateway_b_id
+  web_a_id              = module.vpc.web_a_id
+  web_b_id              = module.vpc.web_b_id
+  internet_alb_sg_id    = module.security.internet_alb_sg_id
+  workload_alb_sg_id    = module.security.workload_alb_sg_id
+  workload_nlb_tg_port  = var.workload_nlb_tg_port
+  workload_nlb_lis_port = var.workload_nlb_lis_port
+  workload_alb_tg_port  = var.workload_alb_tg_port
+  workload_alb_lis_port = var.workload_alb_lis_port
+  internet_alb_tg_port  = var.internet_alb_tg_port
+  internet_alb_lis_port = var.internet_alb_lis_port
 }
 
 module "ecs" {
@@ -95,6 +105,7 @@ module "ecs" {
   task_memory         = var.task_memory
   desired_count       = var.desired_count
   log_retention_days  = var.log_retention_days
+  container_port      = var.container_port
 }
 
 module "aurora" {

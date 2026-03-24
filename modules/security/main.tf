@@ -8,8 +8,8 @@ resource "aws_security_group" "internet_alb" {
   vpc_id = var.internet_vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.internet_alb_lis_port
+    to_port     = var.internet_alb_lis_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -33,8 +33,8 @@ resource "aws_security_group" "workload_alb" {
   vpc_id = var.workload_vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.workload_alb_lis_port
+    to_port     = var.workload_alb_lis_port
     protocol    = "tcp"
     cidr_blocks = [var.internet_cidr, var.workload_cidr]
   }
@@ -58,8 +58,8 @@ resource "aws_security_group" "ecs" {
   vpc_id = var.workload_vpc_id
 
   ingress {
-    from_port       = 8080
-    to_port         = 8080
+    from_port       = var.container_port
+    to_port         = var.container_port
     protocol        = "tcp"
     security_groups = [aws_security_group.workload_alb.id]
   }
@@ -83,8 +83,8 @@ resource "aws_security_group" "aurora" {
   vpc_id = var.workload_vpc_id
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
+    from_port       = var.db_port
+    to_port         = var.db_port
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs.id]
   }

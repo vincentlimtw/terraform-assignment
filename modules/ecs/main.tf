@@ -63,7 +63,7 @@ resource "aws_ecs_task_definition" "echoserver" {
     essential = true
 
     portMappings = [{
-      containerPort = 8080
+      containerPort = var.container_port
       protocol      = "tcp"
     }]
 
@@ -101,7 +101,7 @@ resource "aws_ecs_service" "echoserver" {
   load_balancer {
     target_group_arn = var.workload_alb_tg_arn
     container_name   = "${var.prefix}-container"
-    container_port   = 8080
+    container_port   = var.container_port
   }
 
   tags = {

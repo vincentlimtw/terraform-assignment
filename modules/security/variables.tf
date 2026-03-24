@@ -4,3 +4,7 @@ variable "internet_vpc_id" { description = "Internet VPC ID" }
 variable "workload_vpc_id" { description = "Workload VPC ID" }
 variable "internet_cidr" { description = "Internet VPC CIDR" }
 variable "workload_cidr" { description = "Workload VPC CIDR" }
+variable "internet_alb_lis_port" { description = "Internet ALB Listener Port" }
+variable "workload_alb_lis_port" { description = "Workload ALB Listener Port" }
+variable "container_port" { description = "Container Port" }
+variable "db_port" { description = "Database Port" }
