@@ -8,6 +8,8 @@ This project demonstrates a Terraform infrastructure that exposes `k8s.gcr.io/e2
 
 - [Architecture Overview](#architecture-overview)
 - [Data Flow](#data-flow)
+- [Security Flaws](#security-flaws)
+- [Design Trade-offs](#design-trade-offs)
 - [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
 - [Modules](#modules)
@@ -15,8 +17,6 @@ This project demonstrates a Terraform infrastructure that exposes `k8s.gcr.io/e2
 - [Usage](#usage)
 - [Outputs](#outputs)
 - [Cleanup](#cleanup)
-- [Security Flaws](#security-flaws)
-- [Design Trade-offs](#design-trade-offs)
 - [Scheduled Job Recommendation](#scheduled-job-recommendation)
 - [AI Usage](#ai-usage)
 
@@ -72,6 +72,38 @@ Internet
 3. **NLB** (internal, Workload VPC) forwards to the **Workload ALB** registered as its target
 4. **Workload ALB** (internal) forwards to ECS Fargate tasks on port 8080
 5. **ECS Fargate** runs the echoserver container and returns the response
+
+---
+
+## Security Flaws
+
+**1. No AWS Network Firewall**
+
+The firewall subnet exists in the Internet VPC but has no firewall resource deployed, allowing network traffic to pass through uninspected. An attacker can send malicious packets, scan the network, or attempt to access internal resources without any network-level filtering.
+
+**2. No WAF on Internet ALB**
+
+There is no Web Application Firewall attached to the Internet ALB, meaning application-layer traffic is not inspected or filtered. An attacker can send malicious requests such as SQL injection or XSS directly to the ALB without any protection.
+
+**3. Shared Transit Gateway between public and private traffic**
+
+Both the Internet VPC and Workload VPC share the same Transit Gateway. If the route tables are misconfigured, traffic from the Internet VPC could reach internal workload resources directly, bypassing the intended network separation.
+
+---
+
+## Design Trade-offs
+
+**1. Single NAT gateway — cost vs. availability**
+
+Only one NAT gateway is provisioned in `gateway-a`. If AZ-a goes down, all outbound internet traffic from the Workload VPC is lost. The trade-off is cost savings over high availability, which is acceptable for a dev environment but not for production.
+
+**2. NLB → ALB chaining — simplicity vs. latency**
+
+The NLB→ALB pattern is used to bridge traffic across VPCs via the TGW. This adds an extra hop and requires a 180-second wait for the NLB to provision network interfaces, which can cause apply failures if AWS is slow. The trade-off is architectural separation at the cost of added complexity and latency.
+
+**3. Transit Gateway — scalability vs. cost**
+
+Transit Gateway (TGW) incurs per-attachment and per-GB charges. For just two VPCs, VPC Peering would be simpler and cheaper. The trade-off is paying for TGW’s ability to scale to many VPCs, which may not be needed yet.
 
 ---
 
@@ -200,38 +232,6 @@ terraform destroy -var-file=dev.tfvars
 ```
 
 This removes all provisioned resources including both VPCs, the Transit Gateway, all load balancers, the ECS cluster, Aurora cluster, and associated IAM and networking resources.
-
----
-
-## Security Flaws
-
-**1. No Firewall**
-
-The firewall subnet exists in the Internet VPC but has no firewall resource deployed, allowing traffic to pass through uninspected. An attacker can send malicious payloads such as SQL injection or exploit code directly to the Internet ALB with no layer of inspection to detect or block it.
-
-**2. Shared Transit Gateway between public and private traffic**
-
-Both the Internet VPC and Workload VPC share the same Transit Gateway. If the TGW route tables are misconfigured, public internet traffic could potentially reach internal workload resources directly, bypassing the intended network separation between the two VPCs.
-
-**3. No Aurora snapshots**
-
-The Aurora cluster is configured with `skip_final_snapshot = true`, meaning no snapshot is taken when the cluster is destroyed. If data is accidentally deleted, targeted in a ransomware attack, or the cluster is destroyed, there is no backup to restore from.
-
----
-
-## Design Trade-offs
-
-**1. Single NAT gateway — cost vs. availability**
-
-Only one NAT gateway is provisioned in `gateway-a`. If AZ-a goes down, all outbound internet traffic from the Workload VPC is lost. The trade-off is cost savings over high availability, which is acceptable for a dev environment but not for production.
-
-**2. NLB → ALB chaining — simplicity vs. latency**
-
-The NLB→ALB pattern is necessary to bridge traffic across VPCs via TGW. This adds an extra hop and the 180s wait for NLB ENI provisioning is a fragile step that can cause apply failures if AWS is slow. The trade-off is architectural separation at the cost of added complexity and latency.
-
-**3. Transit Gateway — scalability vs. cost**
-
-TGW comes with per-attachment and per-GB charges. For just two VPCs, VPC Peering would be simpler and cheaper. The trade-off is paying for TGW's ability to scale to many VPCs when it may not be needed yet.
 
 ---
 
